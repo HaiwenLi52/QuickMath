@@ -108,6 +108,7 @@
 
     <script>
         let correctAnswer;
+        let currentExplanation;
         
         function generateProblem() {
             const level = document.getElementById('level').value;
@@ -161,7 +162,7 @@
             document.getElementById('answer').value = '';
             document.getElementById('feedback').textContent = '';
             document.getElementById('explanation').textContent = '';
-            return explanation;
+            currentExplanation = explanation;
         }
 
         function checkAnswer() {
@@ -173,13 +174,11 @@
                 feedback.textContent = "Correct! Well done! 🎉";
                 feedback.className = "feedback correct";
                 explanationDiv.textContent = '';
-                // Automatically generate new problem after 1 second
-                setTimeout(newProblem, 1000);
+                newProblem(); // Generate new problem only when answer is correct
             } else {
                 feedback.textContent = `Incorrect. The correct answer is ${correctAnswer}`;
                 feedback.className = "feedback incorrect";
-                // Show explanation when answer is wrong
-                explanationDiv.textContent = generateProblem();
+                explanationDiv.textContent = currentExplanation;
             }
         }
 
