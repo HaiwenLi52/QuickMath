@@ -171,10 +171,12 @@
             const explanationDiv = document.getElementById('explanation');
             
             if (userAnswer === correctAnswer) {
-                feedback.textContent = "Correct! Well done! 🎉";
+                feedback.textContent = "🎉Correct Answer🎉";
                 feedback.className = "feedback correct";
                 explanationDiv.textContent = '';
-                newProblem(); // Generate new problem only when answer is correct
+                setTimeout(() => {
+                    newProblem();
+                }, 1000);
             } else {
                 feedback.textContent = `Incorrect. The correct answer is ${correctAnswer}`;
                 feedback.className = "feedback incorrect";
