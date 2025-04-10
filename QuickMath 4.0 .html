@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Learning Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+        }
+        .problem {
+            font-size: 2rem;
+            margin: 1.5rem 0;
+            color: #34495e;
+        }
+        input {
+            padding: 0.5rem;
+            font-size: 1.2rem;
+            width: 150px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .feedback {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+        }
+        .correct {
+            color: #27ae60;
+        }
+        .incorrect {
+            color: #c0392b;
+        }
+        .explanation {
+            margin-top: 1rem;
+            color: #e67e22;
+            font-size: 1.1rem;
+        }
+        .level-select {
+            margin-bottom: 1rem;
+        }
+        select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            width: 150px;
+            margin: 0 5px;
+        }
+        .stats {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Math Practice</h1>
+        <div class="level-select">
+            <select id="level">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+            <select id="operation">
+                <option value="addition">Addition</option>
+                <option value="subtraction">Subtraction</option>
+                <option value="multiplication">Multiplication</option>
+                <option value="division">Division</option>
+            </select>
+        </div>
+        <div class="problem" id="problem"></div>
+        <input type="number" id="answer" placeholder="Your answer">
+        <br>
+        <button onclick="checkAnswer()">Submit</button>
+        <button onclick="newProblem()">New Problem</button>
+        <div class="feedback" id="feedback"></div>
+        <div class="explanation" id="explanation"></div>
+        <div class="stats" id="stats">
+            Correct: <span id="correctCount">0</span> | 
+            Incorrect: <span id="incorrectCount">0</span> | 
+            Accuracy: <span id="accuracy">0</span>%
+        </div>
+    </div>
+
+    <script>
+        let correctAnswer;
+        let currentExplanation;
+        let stats = {
+            correct: 0,
+            incorrect: 0
+        };
+        
+        function generateProblem() {
+            const level = document.getElementById('level').value;
+            const operation = document.getElementById('operation').value;
+            let num1, num2;
+            
+            switch(level) {
+                case 'beginner':
+                    num1 = Math.floor(Math.random() * 10) + 1;
+                    num2 = Math.floor(Math.random() * 10) + 1;
+                    break;
+                case 'intermediate':
+                    num1 = Math.floor(Math.random() * 50) + 1;
+                    num2 = Math.floor(Math.random() * 50) + 1;
+                    break;
+                case 'advanced':
+                    num1 = Math.floor(Math.random() * 100) + 1;
+                    num2 = Math.floor(Math.random() * 100) + 1;
+                    break;
+            }
+
+            let problem = '';
+            let explanation = '';
+            switch(operation) {
+                case 'addition':
+                    problem = `${num1} + ${num2} = ?`;
+                    correctAnswer = num1 + num2;
+                    explanation = `To add ${num1} and ${num2}, you can count up from ${num1} by adding ${num2} more, or break down the numbers into smaller parts.`;
+                    break;
+                case 'subtraction':
+                    if (num1 < num2) [num1, num2] = [num2, num1];
+                    problem = `${num1} - ${num2} = ?`;
+                    correctAnswer = num1 - num2;
+                    explanation = `To subtract ${num2} from ${num1}, you can count backwards from ${num1} by ${num2}, or find what number plus ${num2} equals ${num1}.`;
+                    break;
+                case 'multiplication':
+                    problem = `${num1} × ${num2} = ?`;
+                    correctAnswer = num1 * num2;
+                    explanation = `Think of ${num1} × ${num2} as adding ${num1} to itself ${num2} times, or making ${num2} groups of ${num1}.`;
+                    break;
+                case 'division':
+                    correctAnswer = num1;
+                    num2 = Math.max(1, num2);
+                    num1 = num1 * num2;
+                    problem = `${num1} ÷ ${num2} = ?`;
+                    explanation = `To divide ${num1} by ${num2}, think about how many groups of ${num2} make ${num1}, or what number times ${num2} equals ${num1}.`;
+                    break;
+            }
+            
+            document.getElementById('problem').textContent = problem;
+            document.getElementById('answer').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('explanation').textContent = '';
+            currentExplanation = explanation;
+        }
+
+        function updateStats() {
+            document.getElementById('correctCount').textContent = stats.correct;
+            document.getElementById('incorrectCount').textContent = stats.incorrect;
+            const total = stats.correct + stats.incorrect;
+            const accuracy = total > 0 ? Math.round((stats.correct / total) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy;
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseFloat(document.getElementById('answer').value);
+            const feedback = document.getElementById('feedback');
+            const explanationDiv = document.getElementById('explanation');
+            
+            if (userAnswer === correctAnswer) {
+                feedback.textContent = "🎉Correct Answer🎉";
+                feedback.className = "feedback correct";
+                explanationDiv.textContent = '';
+                stats.correct++;
+                setTimeout(() => {
+                    newProblem();
+                }, 1000);
+            } else {
+                feedback.textContent = `Incorrect. The correct answer is ${correctAnswer}`;
+                feedback.className = "feedback incorrect";
+                explanationDiv.textContent = currentExplanation;
+                stats.incorrect++;
+            }
+            updateStats();
+        }
+
+        function newProblem() {
+            generateProblem();
+        }
+
+        // Initialize the first problem
+        generateProblem();
+
+        // Add event listener for Enter key
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
